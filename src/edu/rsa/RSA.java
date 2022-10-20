@@ -55,6 +55,22 @@ public class RSA {
     }
 
     /**
+     * 加密过程
+     *
+     * @param rsaUtils  RSA 密钥
+     * @param mByteList 编码后的明文编码序列
+     * @return cByteList 密文编码序列
+     */
+    private static List<BigInteger> enCrypt(RSAUtils rsaUtils, List<BigInteger> mByteList) {
+        // 对分组逐个加密
+        List<BigInteger> cByteList = new ArrayList<>();
+        for (BigInteger byte2 : mByteList)
+            cByteList.add(rsaUtils.en(byte2));
+
+        return cByteList;
+    }
+
+    /**
      * 写入密文文件
      * <p>
      * 密文分组长度 <= nLength, 且长度不一
@@ -77,27 +93,6 @@ public class RSA {
         // 释放系统资源
         fos.close();
     }
-
-    /**
-     * 加密过程
-     *
-     * @param rsaUtils RSA 密钥
-     * @param in       明文文件路径
-     * @param en       密文文件路径
-     */
-    private static void enCrypt(RSAUtils rsaUtils, String in, String en) throws IOException {
-        // 读入明文, 得到序列
-        List<BigInteger> mByteList = readPlain(in);
-
-        // 对分组逐个加密
-        List<BigInteger> cByteList = new ArrayList<>();
-        for (BigInteger byte2 : mByteList)
-            cByteList.add(rsaUtils.en(byte2));
-
-        // 写入密文文件
-        writeCrypto(cByteList, rsaUtils.getN().bitLength(), en);
-    }
-
 
     /**
      * 读入密文文件
@@ -128,6 +123,21 @@ public class RSA {
     }
 
     /**
+     * 解密过程
+     *
+     * @param rsaUtils  RSA 密钥
+     * @param cByteList 密文编码序列
+     * @return dByteList 解码得到的明文编码序列
+     */
+    private static List<BigInteger> deCrypt(RSAUtils rsaUtils, List<BigInteger> cByteList) {
+        // 对分组逐个解密
+        List<BigInteger> dByteList = new ArrayList<>();
+        for (BigInteger byte2 : cByteList)
+            dByteList.add(rsaUtils.de(byte2));
+        return dByteList;
+    }
+
+    /**
      * 写入解密文件
      * <p>
      * 按照之前读入的编码规则解码
@@ -154,41 +164,59 @@ public class RSA {
         fos.close();
     }
 
-    /**
-     * 解密过程
-     *
-     * @param rsaUtils RSA 密钥
-     * @param en       密文文件路径
-     * @param de       解密文件路径
-     */
-    private static void deCrypt(RSAUtils rsaUtils, String en, String de) throws IOException {
-        // 按照密文分组长度读入密文
-        List<BigInteger> cByteList = readCrypto(rsaUtils.getN().bitLength(), en);
-
-        // 对分组逐个解密
-        List<BigInteger> dByteList = new ArrayList<>();
-        for (BigInteger byte2 : cByteList)
-            dByteList.add(rsaUtils.de(byte2));
-
-        // 写入解密文件
-        writePlain(dByteList, de);
-    }
-
     public static void main(String[] args) throws IOException {
 
+        /*
+         * pu 公钥文件路径
+         * pr 私钥文件路径
+         */
         String pu = "keys/publicKey";
         String pr = "keys/privateKey";
 
+        /*
+         * in 明文文件路径
+         * en 密文文件路径
+         * de 解密文件路径
+         */
         String in = "inData/lab2-Plaintext.txt";
         String en = "outData/lab2-Encrypt-text.txt";
         String de = "outData/lab2-Decrypt-text.txt";
 
-        int bitLength = 10;
+        /*
+         * bitLength 密钥长度设置参数
+         */
+        int bitLength = 1024;
+
+        /*
+         * 调用工具生成密钥
+         * 打印 RSA 关键参数
+         */
         RSAUtils rsaUtils = new RSAUtils(bitLength);
         rsaUtils.genKeys(pu, pr);
         rsaUtils.printAll();
 
-        enCrypt(rsaUtils, in, en);
-        deCrypt(rsaUtils, en, de);
+        /*
+         * mByteList 编码后的明文编码序列
+         * cByteList 密文编码序列
+         * dByteList 解码得到的明文编码序列
+         */
+        List<BigInteger> mByteList;
+        List<BigInteger> cByteList;
+        List<BigInteger> dByteList;
+
+        // 加密
+        {
+            mByteList = readPlain(in); // 读入明文, 得到序列
+            cByteList = enCrypt(rsaUtils, mByteList); // 加密
+            writeCrypto(cByteList, rsaUtils.getN().bitLength(), en); // 写入密文文件
+        }
+
+        // 解密
+        {
+            cByteList = readCrypto(rsaUtils.getN().bitLength(), en); // 读入密文, 得到序列
+            dByteList = deCrypt(rsaUtils, cByteList); // 解密
+            writePlain(dByteList, de); // 写入解密文件
+        }
+
     }
 }

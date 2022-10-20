@@ -40,17 +40,23 @@ public class RSAUtils {
     public RSAUtils(int bitLength) {
         Random r = new Random();
 
+        // 内部也是用 Miller-Rabin 算法
         p = BigInteger.probablePrime(bitLength, r);
         q = p.nextProbablePrime();
+
+        // 大素数乘积
         n = p.multiply(q);
+
         // phiN = (p - 1) * (q - 1)
         phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+
         // gcd(e, phiN) = 1, 且 e 不可以太小, 同时 d 也不可以太小, 于是随机生成一个 bitLength 长度的 e
         BigInteger temp = new BigInteger(bitLength, r);
         while (!temp.gcd(phiN).equals(BigInteger.ONE)) {
             temp = temp.add(BigInteger.ONE);
         }
         e = temp;
+
         // d = e^{-1} mod phiN
         d = e.modInverse(phiN);
     }
