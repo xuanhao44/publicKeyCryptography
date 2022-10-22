@@ -177,7 +177,7 @@ public class RSA {
         /*
          * bitLength 密钥长度设置参数
          */
-        int bitLength = 1024;
+        int bitLength = 10;
 
         /*
          * 调用工具生成密钥

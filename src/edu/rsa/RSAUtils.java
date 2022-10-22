@@ -5,6 +5,8 @@ import java.util.Random;
 
 public class RSAUtils {
 
+    private static final BigInteger ONE = BigInteger.ONE;
+
     /**
      * 大素数 p
      */
@@ -47,12 +49,12 @@ public class RSAUtils {
         n = p.multiply(q);
 
         // phiN = (p - 1) * (q - 1)
-        phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        phiN = p.subtract(ONE).multiply(q.subtract(ONE));
 
         // gcd(e, phiN) = 1, 且 e 不可以太小, 同时 d 也不可以太小, 于是随机生成一个 bitLength 长度的 e
         e = new BigInteger(bitLength, r);
-        while (!e.gcd(phiN).equals(BigInteger.ONE)) {
-            e = e.add(BigInteger.ONE);
+        while (!e.gcd(phiN).equals(ONE)) {
+            e = e.add(ONE);
         }
 
         // d = e^{-1} mod phiN
@@ -72,7 +74,7 @@ public class RSAUtils {
         this.e = e;
 
         this.n = p.multiply(q);
-        this.phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        this.phiN = p.subtract(ONE).multiply(q.subtract(ONE));
         this.d = e.modInverse(phiN);
     }
 
@@ -108,8 +110,8 @@ public class RSAUtils {
         System.out.println("gcd(e, phiN) = " + e.gcd(phiN));
         System.out.println("d = " + d + ", len(d) = " + d.bitLength());
         System.out.println("e * d mod phiN = " + e.multiply(d).mod(phiN));
-        System.out.println("e * d - 1 = " + e.multiply(d).subtract(BigInteger.ONE));
-        System.out.println("(e * d - 1) / phi_N = " + (e.multiply(d).subtract(BigInteger.ONE)).divide(phiN));
+        System.out.println("e * d - 1 = " + e.multiply(d).subtract(ONE));
+        System.out.println("(e * d - 1) / phi_N = " + (e.multiply(d).subtract(ONE)).divide(phiN));
     }
 
     public BigInteger getN() {

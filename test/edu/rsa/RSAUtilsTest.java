@@ -1,12 +1,14 @@
 package edu.rsa;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigInteger;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RSAUtilsTest {
-
-    RSAUtils test;
 
     @BeforeAll
     static void beforeAll() {
@@ -28,32 +30,37 @@ class RSAUtilsTest {
         System.out.println("**--- Executed after each test method in this class ---**");
     }
 
-    @Test
-    void GivenBitLength() {
+    /**
+     * 测试密钥生成
+     */
+    @ParameterizedTest
+    @Order(1)
+    @DisplayName("Test GivenBitLength RSAUtils method")
+    @ValueSource(ints = {16, 256, 512, 1024})
+    void GivenBitLength(int bitLength) {
         System.out.println("**--- Test GivenBitLength ---**");
-
-        int bitLength = 100;
 
         RSAUtils rsaUtils = new RSAUtils(bitLength);
         rsaUtils.printAll();
     }
 
-    @Test
-    void GivenParams() {
-        System.out.println("**--- Test Given params construction method executed ---**");
+    /**
+     * 给定密钥 p q e 的运算
+     */
+    @ParameterizedTest
+    @Order(2)
+    @DisplayName("Test GivenParamsAndData RSAUtils method")
+    @CsvSource({"5, 11, 3, 9"})
+    void GivenParamsAndData(BigInteger p, BigInteger q, BigInteger e, BigInteger m) {
+        System.out.println("**--- Test GivenParamsAndData ---**");
 
-        BigInteger p = BigInteger.valueOf(5);
-        BigInteger q = BigInteger.valueOf(11);
-        BigInteger e = BigInteger.valueOf(3);
+        RSAUtils rsaUtils = new RSAUtils(p, q, e);
+        rsaUtils.printAll();
 
-        test = new RSAUtils(p, q, e);
-        test.printAll();
-
-        BigInteger m = BigInteger.valueOf(9);
-        BigInteger c = test.en(m);
+        BigInteger c = rsaUtils.en(m);
         System.out.println("en: c = " + c);
 
-        BigInteger d = test.de(c);
+        BigInteger d = rsaUtils.de(c);
         System.out.println("de: d = " + d);
     }
 }

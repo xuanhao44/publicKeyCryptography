@@ -1,12 +1,16 @@
 package edu.rsa;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigInteger;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SelfUtilsTest {
 
     @BeforeAll
@@ -29,13 +33,16 @@ class SelfUtilsTest {
         System.out.println("**--- Executed after each test method in this class ---**");
     }
 
-    @Test
-    void quickPow1() {
+    /**
+     * 快速幂: 最后取模
+     */
+    @ParameterizedTest
+    @Order(1)
+    @DisplayName("Test quickPow1 method")
+    @CsvSource({"5, 117, 19"})
+    void quickPow1(BigInteger m, BigInteger e, BigInteger n) {
         System.out.println("**--- Test quickPow1 method executed ---**");
 
-        BigInteger m = BigInteger.valueOf(5);
-        BigInteger e = BigInteger.valueOf(117);
-        BigInteger n = BigInteger.valueOf(19);
         System.out.println("m = " + m);
         System.out.println("e = " + e);
         System.out.println("n = " + n);
@@ -50,13 +57,16 @@ class SelfUtilsTest {
         assertEquals(ans, self1);
     }
 
-    @Test
-    void quickPow2() {
+    /**
+     * 快速幂: 循环取模
+     */
+    @ParameterizedTest
+    @Order(2)
+    @DisplayName("Test quickPow2 method")
+    @CsvSource({"5, 117, 19"})
+    void quickPow2(BigInteger m, BigInteger e, BigInteger n) {
         System.out.println("**--- Test quickPow2 method executed ---**");
 
-        BigInteger m = BigInteger.valueOf(5);
-        BigInteger e = BigInteger.valueOf(117);
-        BigInteger n = BigInteger.valueOf(19);
         System.out.println("m = " + m);
         System.out.println("e = " + e);
         System.out.println("n = " + n);
@@ -71,12 +81,16 @@ class SelfUtilsTest {
         assertEquals(ans, self2);
     }
 
-    @Test
-    void mGcd() {
+    /**
+     * 求最大公因数
+     */
+    @ParameterizedTest
+    @Order(3)
+    @DisplayName("Test mGcd method")
+    @CsvSource({"24140, 16762"})
+    void mGcd(BigInteger a, BigInteger b) {
         System.out.println("**--- Test mGcd method executed ---**");
 
-        BigInteger a = BigInteger.valueOf(24140);
-        BigInteger b = BigInteger.valueOf(16762);
         System.out.println("a = " + a);
         System.out.println("b = " + b);
         System.out.println("Calc: ans = gcd(a,b)");
@@ -90,12 +104,16 @@ class SelfUtilsTest {
         assertEquals(ans, self2);
     }
 
-    @Test
-    void modR() {
+    /**
+     * 求模逆元
+     */
+    @ParameterizedTest
+    @Order(4)
+    @DisplayName("Test modR method")
+    @CsvSource({"1234, 4321"})
+    void modR(BigInteger a, BigInteger b) {
         System.out.println("**--- Test modR method executed ---**");
 
-        BigInteger a = BigInteger.valueOf(1234);
-        BigInteger b = BigInteger.valueOf(4321);
         System.out.println("a = " + a);
         System.out.println("b = " + b);
         System.out.println("Calc: ans = a^{-1} mod b");
@@ -109,8 +127,14 @@ class SelfUtilsTest {
         assertEquals(ans, self);
     }
 
-    // BigInteger.probablePrime 生成一个素数, 用我们的 MRTest 去测试
-    boolean MRTest() {
+    /**
+     * BigInteger.probablePrime 生成一个素数, 用我们的 MRTest 去测试
+     * 重复 100 次
+     */
+    @RepeatedTest(100)
+    @Order(5)
+    @DisplayName("Test MRTest method")
+    void MRTest() {
         System.out.println("**--- Test MRTest method executed ---**");
 
         int bitLength = 1024;
@@ -122,42 +146,27 @@ class SelfUtilsTest {
         boolean self = SelfUtils.MRTest(n, rounds);
         System.out.println("self = " + self);
 
-        return self;
+        assertTrue(self);
     }
 
-    @Test
-    void MRTestN() {
-        System.out.println("**--- Test MRTest method many times---**");
-
-        boolean result;
-        do {
-            result = MRTest();
-        } while (result); // 直到错了才能停
-    }
-
-    // 我们生成一个大素数, 用 BigInteger 的 isProbablePrime 去测试
-    boolean genPrime() {
+    /**
+     * 我们生成一个大素数, 用 BigInteger 的 isProbablePrime 去测试
+     * 重复 100 次
+     */
+    @RepeatedTest(100)
+    @Order(6)
+    @DisplayName("Test genPrime method")
+    void genPrime() {
         System.out.println("**--- Test genPrime method executed ---**");
 
         int bitLength = 1024;
         BigInteger self = SelfUtils.genPrime(bitLength);
         System.out.println("self genPrime = " + self);
 
-        int certainty = 100;
+        int certainty = 100; // 可信度: 1 - (1/2)^certainty
         boolean judge = self.isProbablePrime(certainty);
         System.out.println("judge = " + judge);
 
-        return judge;
+        assertTrue(judge);
     }
-
-    @Test
-    void genPrimeN() {
-        System.out.println("**--- Test genPrime method many times---**");
-
-        boolean result;
-        do {
-            result = genPrime();
-        } while (result); // 直到错了才能停
-    }
-
 }
