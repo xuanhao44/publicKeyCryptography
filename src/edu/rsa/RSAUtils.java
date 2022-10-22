@@ -1,7 +1,5 @@
 package edu.rsa;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -24,13 +22,13 @@ public class RSAUtils {
      */
     private final BigInteger phiN;
     /**
-     * 指数 e
-     */
-    private final BigInteger e;
-    /**
      * 指数逆元 d
      */
     private final BigInteger d;
+    /**
+     * 指数 e
+     */
+    private BigInteger e;
 
     /**
      * 生成密钥
@@ -41,8 +39,9 @@ public class RSAUtils {
         Random r = new Random();
 
         // 内部也是用 Miller-Rabin 算法
-        p = BigInteger.probablePrime(bitLength, r);
-        q = p.nextProbablePrime();
+        // p, q 不应该很接近; 一般相差几个 bit
+        p = BigInteger.probablePrime(bitLength + 5, r);
+        q = BigInteger.probablePrime(bitLength - 5, r);
 
         // 大素数乘积
         n = p.multiply(q);
@@ -51,14 +50,30 @@ public class RSAUtils {
         phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
 
         // gcd(e, phiN) = 1, 且 e 不可以太小, 同时 d 也不可以太小, 于是随机生成一个 bitLength 长度的 e
-        BigInteger temp = new BigInteger(bitLength, r);
-        while (!temp.gcd(phiN).equals(BigInteger.ONE)) {
-            temp = temp.add(BigInteger.ONE);
+        e = new BigInteger(bitLength, r);
+        while (!e.gcd(phiN).equals(BigInteger.ONE)) {
+            e = e.add(BigInteger.ONE);
         }
-        e = temp;
 
         // d = e^{-1} mod phiN
         d = e.modInverse(phiN);
+    }
+
+    /**
+     * 填充密钥
+     *
+     * @param p 大素数 p
+     * @param q 大素数 q
+     * @param e gcd(e, phiN) = 1
+     */
+    public RSAUtils(BigInteger p, BigInteger q, BigInteger e) {
+        this.p = p;
+        this.q = q;
+        this.e = e;
+
+        this.n = p.multiply(q);
+        this.phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        this.d = e.modInverse(phiN);
     }
 
     /**
@@ -88,47 +103,13 @@ public class RSAUtils {
         System.out.println("p = " + p + ", len(p) = " + p.bitLength());
         System.out.println("q = " + q + ", len(q) = " + q.bitLength());
         System.out.println("n = " + n + ", len(n) = " + n.bitLength());
-        System.out.println("phiN  = " + phiN + ", len(phiN) = " + phiN.bitLength());
-        System.out.println("e  = " + e + ", len(e) = " + e.bitLength());
+        System.out.println("phiN = " + phiN + ", len(phiN) = " + phiN.bitLength());
+        System.out.println("e = " + e + ", len(e) = " + e.bitLength());
         System.out.println("gcd(e, phiN) = " + e.gcd(phiN));
-        System.out.println("d  = " + d + ", len(d) = " + d.bitLength());
+        System.out.println("d = " + d + ", len(d) = " + d.bitLength());
         System.out.println("e * d mod phiN = " + e.multiply(d).mod(phiN));
-    }
-
-    /**
-     * 获得公钥 {e, n}
-     *
-     * @return publicKey
-     */
-    private String getPublicKey() {
-        return e.toString() + n.toString();
-    }
-
-    /**
-     * 获得秘钥 {d, n}
-     *
-     * @return privateKey
-     */
-    private String getPrivateKey() {
-        return d.toString() + n.toString();
-    }
-
-    /**
-     * 输出公钥对
-     *
-     * @param puName 公钥文件路径
-     * @param prName 密钥文件路径
-     */
-    public void genKeys(String puName, String prName) throws IOException {
-        FileOutputStream fosPu = new FileOutputStream(puName);
-        FileOutputStream fosPr = new FileOutputStream(prName);
-
-        fosPu.write(getPublicKey().getBytes());
-        fosPr.write(getPrivateKey().getBytes());
-
-        fosPu.close();
-        fosPr.close();
-
+        System.out.println("e * d - 1 = " + e.multiply(d).subtract(BigInteger.ONE));
+        System.out.println("(e * d - 1) / phi_N = " + (e.multiply(d).subtract(BigInteger.ONE)).divide(phiN));
     }
 
     public BigInteger getN() {

@@ -25,7 +25,6 @@ public class RSA {
         FileInputStream fis = new FileInputStream(inName);
 
         int by, byPre;
-        int k1 = 1_000;
         BigInteger temp;
         List<BigInteger> mByteList = new ArrayList<>();
 
@@ -36,11 +35,11 @@ public class RSA {
 
             if ((by != -1) && (byPre != -1)) {
                 // 正常两个
-                temp = BigInteger.valueOf(by * k1 + byPre);
+                temp = BigInteger.valueOf(by * 1_000 + byPre);
                 mByteList.add(temp);
             } else if (by != -1) {
                 // 只有一个, 由于 else if 就不需要判断 byPre
-                temp = BigInteger.valueOf(by * k1);
+                temp = BigInteger.valueOf(by * 1_000);
                 mByteList.add(temp);
                 break;
             } else {
@@ -149,7 +148,7 @@ public class RSA {
         FileOutputStream fos = new FileOutputStream(deName);
 
         BigInteger by, byNext;
-        BigInteger k1 = BigInteger.valueOf(1000);
+        BigInteger k1 = BigInteger.valueOf(1_000);
         for (BigInteger byte2 : dByteList) {
             by = byte2.divide(k1);
             byNext = byte2.mod(k1);
@@ -167,20 +166,13 @@ public class RSA {
     public static void main(String[] args) throws IOException {
 
         /*
-         * pu 公钥文件路径
-         * pr 私钥文件路径
-         */
-        String pu = "keys/publicKey";
-        String pr = "keys/privateKey";
-
-        /*
          * in 明文文件路径
          * en 密文文件路径
          * de 解密文件路径
          */
-        String in = "inData/lab2-Plaintext.txt";
-        String en = "outData/lab2-Encrypt-text.txt";
-        String de = "outData/lab2-Decrypt-text.txt";
+        String in = "data/inData/lab2-Plaintext.txt";
+        String en = "data/outData/lab2-Encrypt-text.txt";
+        String de = "data/outData/lab2-Decrypt-text.txt";
 
         /*
          * bitLength 密钥长度设置参数
@@ -192,7 +184,6 @@ public class RSA {
          * 打印 RSA 关键参数
          */
         RSAUtils rsaUtils = new RSAUtils(bitLength);
-        rsaUtils.genKeys(pu, pr);
         rsaUtils.printAll();
 
         /*
