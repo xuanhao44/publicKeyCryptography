@@ -5,6 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SelfUtilsTest {
+
+    private static final BigInteger ONE = BigInteger.ONE;
 
     @BeforeAll
     static void beforeAll() {
@@ -63,22 +67,23 @@ class SelfUtilsTest {
     @ParameterizedTest
     @Order(2)
     @DisplayName("Test quickPow2 method")
-    @CsvSource({"5, 117, 19"})
-    void quickPow2(BigInteger m, BigInteger e, BigInteger n) {
+    @CsvSource({"2, 29"})
+    void quickPow2(BigInteger a, BigInteger p) {
         System.out.println("**--- Test quickPow2 method executed ---**");
 
-        System.out.println("m = " + m);
-        System.out.println("e = " + e);
-        System.out.println("n = " + n);
-        System.out.println("Calc: ans = m^e mod n");
+        // 离散对数
+        System.out.println("a = " + a); // 本原根
+        System.out.println("p = " + p); // 模数
 
-        BigInteger self2 = SelfUtils.quickPow2(m, e, n);
-        BigInteger ans = m.modPow(e, n);
+        // (x,y): dlog_(a,p) (x) = y
+        Map<BigInteger, BigInteger> dLogAp = new HashMap<>();
 
-        System.out.println("ans = " + ans);
-        System.out.println("self2 = " + self2);
+        for (BigInteger i = ONE; i.compareTo(p) < 0; i = i.add(ONE))
+            dLogAp.put(a.modPow(i, p), i); // x = a ^ y mod p
 
-        assertEquals(ans, self2);
+        for (BigInteger j = ONE; j.compareTo(p) < 0; j = j.add(ONE))
+            System.out.println("dlog_{" + a + "," + p + "}" + "(" + j + "} = " + dLogAp.get(j));
+
     }
 
     /**
