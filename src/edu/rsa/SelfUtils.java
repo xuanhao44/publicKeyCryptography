@@ -27,7 +27,7 @@ public class SelfUtils {
      * @param n 从中获取长度和大小
      * @return r 符合要求的随机数
      */
-    private static BigInteger getRandomBi(BigInteger n, Random rnd) {
+    public static BigInteger getRandomBi(BigInteger n, Random rnd) {
         // From http://stackoverflow.com/a/2290089
         BigInteger r;
         do {

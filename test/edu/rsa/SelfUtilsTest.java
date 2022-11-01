@@ -79,10 +79,10 @@ class SelfUtilsTest {
         Map<BigInteger, BigInteger> dLogAp = new HashMap<>();
 
         for (BigInteger i = ONE; i.compareTo(p) < 0; i = i.add(ONE))
-            dLogAp.put(a.modPow(i, p), i); // x = a ^ y mod p
+            dLogAp.put(SelfUtils.quickPow2(a, i, p), i); // x = a ^ y mod p
 
         for (BigInteger j = ONE; j.compareTo(p) < 0; j = j.add(ONE))
-            System.out.println("dlog_{" + a + "," + p + "}" + "(" + j + "} = " + dLogAp.get(j));
+            System.out.println("dlog_{" + a + "," + p + "}" + "(" + j + ") = " + dLogAp.get(j));
 
     }
 
@@ -173,5 +173,22 @@ class SelfUtilsTest {
         System.out.println("judge = " + judge);
 
         assertTrue(judge);
+    }
+
+    /**
+     * 测试 getRandomBi 是否生成了小于质数 n 的随机数 (有没有大于的)
+     * 重复 100 次
+     */
+    @RepeatedTest(100)
+    @Order(7)
+    @DisplayName("Test getRandomBi method")
+    void getRandomBi() {
+        System.out.println("**--- Test getRandomBi method executed ---**");
+
+        BigInteger n = BigInteger.probablePrime(10, new Random());
+
+        BigInteger r = SelfUtils.getRandomBi(n, new Random());
+
+        assertTrue(r.compareTo(n) < 0);
     }
 }
