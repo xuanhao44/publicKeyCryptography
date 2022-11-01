@@ -4,10 +4,11 @@ import java.math.BigInteger;
 import java.util.Random;
 
 public class ELGamalUtils {
+
     private static final BigInteger ONE = BigInteger.ONE;
 
     /**
-     大素数 p
+     大素数 p, 可以使得求解离散对数为困难问题
      */
     private final BigInteger p;
     /**
@@ -19,7 +20,7 @@ public class ELGamalUtils {
      */
     private final BigInteger x;
     /**
-     y = g^x mod p
+     公钥参数 y = g^x mod p
      */
     private final BigInteger y;
 
@@ -27,10 +28,10 @@ public class ELGamalUtils {
         return m;
     }
 
-    public ELGamalUtils() {
-        int bitLength = 1024;
-        int certainty = 100;
+    public ELGamalUtils(int bitLength, int certainty) {
+
         PrimitiveRoot primitiveRoot = new PrimitiveRoot(bitLength, certainty, new Random());
+
         p = primitiveRoot.getP();
         g = primitiveRoot.getG();
         // 1 < x < p - 1
