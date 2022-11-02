@@ -15,7 +15,7 @@ public class Signature {
      */
     public BigInteger r;
     /**
-     签名 (r, s): s
+     * 签名 (r, s): s
      */
     public BigInteger s;
 
@@ -24,4 +24,14 @@ public class Signature {
         this.r = r;
         this.s = s;
     }
+
+    public void printAll() {
+        System.out.println("Signature start display");
+        System.out.println("len(m) = " + m.bitLength() + ", m = " + m);
+        System.out.println("len(r) = " + r.bitLength() + ", r = " + r);
+        System.out.println("len(s) = " + s.bitLength() + ", s = " + s);
+        System.out.println("Signature end display\n");
+    }
+
+
 }

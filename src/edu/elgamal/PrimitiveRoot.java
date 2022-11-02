@@ -56,16 +56,12 @@ public class PrimitiveRoot {
         } while(!p.isProbablePrime(certainty));
 
         // 2. 生成一个随机数 g, 1 < g < p - 1, 直到 g^2 mod p 和 g^q mod p 都不等于 1
-        BigInteger modPow_g_2_p, modPow_g_q_p;
-        boolean g_2_p_1, g_p_q_1;
-
+        boolean g2p1, gpq1;
         do {
             g = getRandomBi(p.subtract(ONE), new Random());
-            modPow_g_2_p = g.modPow(TWO, p); // g^2 mod p
-            modPow_g_q_p = g.modPow(q, p); // g^q mod p
-            g_2_p_1 = modPow_g_2_p.equals(ONE);
-            g_p_q_1 = modPow_g_q_p.equals(ONE);
-        } while (g_2_p_1 && g_p_q_1);
+            g2p1 = g.modPow(TWO, p).equals(ONE); // g^2 mod p = 1
+            gpq1 = g.modPow(q, p).equals(ONE); // g^q mod p = 1
+        } while (g2p1 && gpq1);
     }
 
     public BigInteger getP() {
@@ -76,4 +72,7 @@ public class PrimitiveRoot {
         return g;
     }
 
+    public BigInteger getQ() {
+        return q;
+    }
 }
