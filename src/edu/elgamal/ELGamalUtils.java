@@ -16,15 +16,18 @@ public class ELGamalUtils {
      */
     private final BigInteger p_1;
     /**
-     * 大素数 p 的一个原根 g
+     * 大素数 p 的一个本原根 g
      */
     private final BigInteger g;
     /**
      * 私钥 x: 随机数, 满足 1 < x < p - 1
+     * x \in {2....,p - 2}
+     * or can be called sk_A
      */
     private final BigInteger x;
     /**
-     * 公钥参数 y = g^x mod p
+     * 公钥 y: y = g^x mod p
+     * or can be called pk_A
      */
     private final BigInteger y;
 
@@ -69,7 +72,7 @@ public class ELGamalUtils {
     }
 
     /**
-     * 明文签名
+     * 签名过程
      *
      * @param m 待签消息
      * @return Signature 明文和签名的组合
@@ -93,7 +96,6 @@ public class ELGamalUtils {
         // r = g^k mod p
         BigInteger r = g.modPow(k, p);
 
-        // 签名空间 s = k^{-1} * (hash(m) - xr) mod (p - 1)
         /*
          * 签名空间 s = k^{-1} * (hash(m) - xr) mod (p - 1)
          * k^{-1} * (hash(m) - xr) 可能是负数
@@ -105,7 +107,7 @@ public class ELGamalUtils {
     }
 
     /**
-     检验签名
+     验证签名过程
      */
     public boolean ver(Signature signature) {
         // 接收方收到 m 和 (r, s)
